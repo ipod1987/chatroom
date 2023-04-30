@@ -17,7 +17,7 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @ApiOperation({ summary: 'Create a Room' })
-  @ApiResponse({ status: 201, description: 'Room created' })
+  @ApiResponse({ status: 201, description: 'Room created', type: Room })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @Post()
   async createRoom(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
@@ -29,7 +29,7 @@ export class RoomController {
   @ApiResponse({ status: 201, description: 'Member added' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Room not found' })
-  @Patch(':id/users')
+  @Patch(':roomId/users')
   async addUserToRoom(
     @Param('roomId') roomId: string,
     @Body() addUserDto: AddUserDto,
@@ -42,15 +42,15 @@ export class RoomController {
   @ApiResponse({ status: 201, description: 'Message sent', type: Room })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Room not found' })
-  @Patch(':id/messages')
+  @Patch(':roomId/messages')
   async sendMessageToRoom(
-    @Param('id') roomId: string,
+    @Param('roomId') roomId: string,
     @Body() data: SendMessageDto,
   ): Promise<Room> {
     return await this.roomService.sendMessage(roomId, data);
   }
 
-  @Get(':roomId/latest-messages')
+  @Post(':roomId/latest-messages')
   @ApiOperation({ summary: 'Get the latest messages from a room' })
   @ApiResponse({
     status: 200,

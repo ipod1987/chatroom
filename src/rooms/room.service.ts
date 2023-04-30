@@ -4,12 +4,17 @@ import { Model } from 'mongoose';
 import { Room, RoomDocument } from './schemas/room.schema';
 import { Message } from '../messages/schemas/message.schema';
 import { AddUserDto, CreateRoomDto, SendMessageDto } from './dto/room.dto';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class RoomService {
   constructor(@InjectModel(Room.name) private roomModel: Model<RoomDocument>) {}
 
   async createRoom(dataDto: CreateRoomDto): Promise<Room> {
+    const roomSearch = await this.findRoomByName(dataDto.name);
+    if (roomSearch.length > 0) {
+      throw new NotFoundException(`Room with name ${dataDto.name} already exist`);
+    }
     const room = new this.roomModel({ name: dataDto.name });
     return await room.save();
   }
@@ -39,10 +44,17 @@ export class RoomService {
   }
 
   private async findRoomById(roomId: string): Promise<Room> {
+    if (!roomId || !Types.ObjectId.isValid(roomId)) {
+      throw new NotFoundException(`the room id: '${roomId}' is not valid`);
+    }
     const room = await this.roomModel.findById(roomId);
     if (!room) {
       throw new NotFoundException(`Room with id ${roomId} not found`);
     }
     return room;
+  }
+
+  private async findRoomByName(name: string): Promise<Room[]> {
+    return await this.roomModel.find({ name }).exec();
   }
 }
