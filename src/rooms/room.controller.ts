@@ -9,7 +9,7 @@ import {
 import { RoomService } from './room.service';
 import { Room } from './schemas/room.schema';
 import { Message } from '../messages/schemas/message.schema';
-import { User } from '../users/schemas/user.schema';
+import { AddUserDto, CreateRoomDto, GetLatestMessagesDto, SendMessageDto } from './dto/room.dto';
 
 @ApiTags('Room')
 @Controller('room')
@@ -17,11 +17,11 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @ApiOperation({ summary: 'Create a Room' })
-  @ApiResponse({ status: 201, description: 'Room created' })
+  @ApiResponse({ status: 201, description: 'Room created', type: Room })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @Post()
-  async createRoom(@Body('name') name: string): Promise<Room> {
-    const room = await this.roomService.createRoom(name);
+  async createRoom(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
+    const room = await this.roomService.createRoom(createRoomDto);
     return room;
   }
 
@@ -29,9 +29,12 @@ export class RoomController {
   @ApiResponse({ status: 201, description: 'Member added' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Room not found' })
-  @Patch(':id/users')
-  async addUserToRoom(@Param('roomId') roomId: string, @Body() user: User): Promise<Room> {
-    const room = await this.roomService.addMember(roomId, user);
+  @Patch(':roomId/users')
+  async addUserToRoom(
+    @Param('roomId') roomId: string,
+    @Body() addUserDto: AddUserDto,
+  ): Promise<Room> {
+    const room = await this.roomService.addMember(roomId, addUserDto);
     return room;
   }
 
@@ -39,15 +42,15 @@ export class RoomController {
   @ApiResponse({ status: 201, description: 'Message sent', type: Room })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Room not found' })
-  @Patch(':id/messages')
+  @Patch(':roomId/messages')
   async sendMessageToRoom(
-    @Param('id') roomId: string,
-    @Body() data: { userId: string; message: string },
+    @Param('roomId') roomId: string,
+    @Body() data: SendMessageDto,
   ): Promise<Room> {
-    return await this.roomService.sendMessage(roomId, data.userId, data.message);
+    return await this.roomService.sendMessage(roomId, data);
   }
 
-  @Get(':roomId/latest-messages')
+  @Post(':roomId/latest-messages')
   @ApiOperation({ summary: 'Get the latest messages from a room' })
   @ApiResponse({
     status: 200,
@@ -57,9 +60,9 @@ export class RoomController {
   })
   async getLatestMessages(
     @Param('roomId') roomId: string,
-    @Body('limit') limit: number,
+    @Body() data: GetLatestMessagesDto,
   ): Promise<Message[]> {
-    const messages = await this.roomService.getLatestMessages(roomId, limit);
+    const messages = await this.roomService.getLatestMessages(roomId, data.limit);
     return messages;
   }
 }
