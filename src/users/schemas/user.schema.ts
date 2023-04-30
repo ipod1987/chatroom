@@ -11,11 +11,14 @@ export class User {
   @Prop()
   lastName: string;
 
-  @Prop()
+  @Prop({ unique: true })
   email: string;
 
   @Prop()
   password: string;
+
+  @Prop()
+  salt: string;
 
   @Prop()
   created_at: Date;

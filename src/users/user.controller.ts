@@ -41,7 +41,7 @@ export class UsersController {
   @ApiParam({ name: 'id', description: 'User ID', required: true })
   @Get(':id')
   findOne(@Param('id') id: string): Promise<User> {
-    return this.usersService.findOne(id);
+    return this.usersService.findOneById(id);
   }
 
   @ApiOperation({ summary: 'Update a user by ID' })
