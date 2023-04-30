@@ -1,8 +1,8 @@
 {
-  "name": "nest-typescript-starter",
+  "name": "chatroom-challenge",
   "private": true,
-  "version": "1.0.0",
-  "description": "Nest TypeScript starter repository",
+  "version": "0.2.0",
+  "description": "Project with Nest TypeScript and mongodb",
   "license": "MIT",
   "scripts": {
     "prettier": "prettier --write \"src/**/*.{ts,tsx}\"",

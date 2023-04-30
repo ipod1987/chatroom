@@ -9,7 +9,7 @@ import {
 import { RoomService } from './room.service';
 import { Room } from './schemas/room.schema';
 import { Message } from '../messages/schemas/message.schema';
-import { User } from '../users/schemas/user.schema';
+import { AddUserDto, CreateRoomDto, GetLatestMessagesDto, SendMessageDto } from './dto/room.dto';
 
 @ApiTags('Room')
 @Controller('room')
@@ -20,8 +20,8 @@ export class RoomController {
   @ApiResponse({ status: 201, description: 'Room created' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @Post()
-  async createRoom(@Body('name') name: string): Promise<Room> {
-    const room = await this.roomService.createRoom(name);
+  async createRoom(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
+    const room = await this.roomService.createRoom(createRoomDto);
     return room;
   }
 
@@ -30,8 +30,11 @@ export class RoomController {
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Room not found' })
   @Patch(':id/users')
-  async addUserToRoom(@Param('roomId') roomId: string, @Body() user: User): Promise<Room> {
-    const room = await this.roomService.addMember(roomId, user);
+  async addUserToRoom(
+    @Param('roomId') roomId: string,
+    @Body() addUserDto: AddUserDto,
+  ): Promise<Room> {
+    const room = await this.roomService.addMember(roomId, addUserDto);
     return room;
   }
 
@@ -42,9 +45,9 @@ export class RoomController {
   @Patch(':id/messages')
   async sendMessageToRoom(
     @Param('id') roomId: string,
-    @Body() data: { userId: string; message: string },
+    @Body() data: SendMessageDto,
   ): Promise<Room> {
-    return await this.roomService.sendMessage(roomId, data.userId, data.message);
+    return await this.roomService.sendMessage(roomId, data);
   }
 
   @Get(':roomId/latest-messages')
@@ -57,9 +60,9 @@ export class RoomController {
   })
   async getLatestMessages(
     @Param('roomId') roomId: string,
-    @Body('limit') limit: number,
+    @Body() data: GetLatestMessagesDto,
   ): Promise<Message[]> {
-    const messages = await this.roomService.getLatestMessages(roomId, limit);
+    const messages = await this.roomService.getLatestMessages(roomId, data.limit);
     return messages;
   }
 }
