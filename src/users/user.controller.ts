@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common'
 import {
   ApiBadRequestResponse,
   ApiBody,
+  ApiConflictResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -20,6 +21,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Create a User' })
   @ApiResponse({ status: 201, description: 'User created', type: User })
   @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiConflictResponse({ description: 'Already exists this email' })
   @ApiBody({
     type: CreateUserDto,
     description: 'User firstName, lastName, email and password object',
