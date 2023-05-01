@@ -10,7 +10,14 @@ export class MessagesService {
   constructor(@InjectModel(Message.name) private readonly messageModel: Model<MessageDocument>) {}
 
   async create(room: Room, sender: User, content: string): Promise<Message> {
-    const createdMessage = new this.messageModel({ room, sender, content });
+    const dateMessage = new Date();
+    const createdMessage = new this.messageModel({
+      room,
+      sender,
+      content,
+      created_at: dateMessage,
+      updated_at: dateMessage,
+    });
     const message = await createdMessage.save();
     const newMessage: MessageDocument = message.toObject();
 
