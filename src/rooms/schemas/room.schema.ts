@@ -10,10 +10,10 @@ export class Room {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: [Types.ObjectId], ref: User.name })
+  @Prop({ type: [{ type: Types.ObjectId, ref: User.name }] })
   members: User[];
 
-  @Prop({ type: [Types.ObjectId], ref: Message.name })
+  @Prop({ type: [{ type: Types.ObjectId, ref: Message.name }] })
   messages: Message[];
 
   @Prop()

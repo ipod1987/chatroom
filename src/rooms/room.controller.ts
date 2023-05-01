@@ -16,6 +16,13 @@ import { AddUserDto, CreateRoomDto, GetLatestMessagesDto, SendMessageDto } from 
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
+  @ApiOperation({ summary: 'Get all rooms' })
+  @ApiResponse({ status: 200, description: 'Returns all rooms', type: [Room] })
+  @Get()
+  findAll(): Promise<Room[]> {
+    return this.roomService.findAll();
+  }
+
   @ApiOperation({ summary: 'Create a Room' })
   @ApiResponse({ status: 201, description: 'Room created', type: Room })
   @ApiBadRequestResponse({ description: 'Bad request' })
@@ -27,7 +34,9 @@ export class RoomController {
 
   @ApiOperation({ summary: 'Add a Member to a Room' })
   @ApiResponse({ status: 201, description: 'Member added' })
-  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiBadRequestResponse({
+    description: `User with email 'mail' already belongs to room 'roon name'`,
+  })
   @ApiNotFoundResponse({ description: 'Room not found' })
   @Patch(':roomId/users')
   async addUserToRoom(

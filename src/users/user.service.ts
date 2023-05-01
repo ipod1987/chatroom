@@ -1,10 +1,11 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -33,7 +34,13 @@ export class UsersService {
     return this.userModel.find({}, { password: 0, salt: 0 }).exec();
   }
 
+  async findOneByIdModel(_id: string): Promise<User> {
+    this.validateId(_id);
+    return this.userModel.findOne({ _id });
+  }
+
   async findOneById(id: string): Promise<User> {
+    this.validateId(id);
     return this.userModel.findById(id).exec();
   }
 
@@ -42,6 +49,7 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    this.validateId(id);
     if (updateUserDto.password) {
       const { password, salt } = this.securityHash(updateUserDto.password);
       updateUserDto.password = password;
@@ -51,6 +59,7 @@ export class UsersService {
   }
 
   async remove(id: string): Promise<User> {
+    this.validateId(id);
     return this.userModel.findByIdAndRemove(id).exec();
   }
 
@@ -58,5 +67,11 @@ export class UsersService {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
     return { password: hashedPassword, salt };
+  }
+
+  private validateId(userId: string) {
+    if (!userId || !Types.ObjectId.isValid(userId)) {
+      throw new NotFoundException(`the user id: '${userId}' is not valid`);
+    }
   }
 }
