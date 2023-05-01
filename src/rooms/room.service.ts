@@ -49,6 +49,7 @@ export class RoomService {
   async sendMessage(roomId: string, messageDto: SendMessageDto): Promise<Room> {
     this.validateId(roomId);
     const room = await this.findRoomById(roomId);
+    const user = await this.usersService.findOneByIdModel(messageDto.userId);
     // room.messages.push(message);
     return null; // await room.save();
   }
