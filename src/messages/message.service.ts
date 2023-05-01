@@ -44,6 +44,7 @@ export class MessagesService {
     return await this.messageModel
       .find({ room: room._id })
       .populate({ path: 'sender', select: ['_id', 'firstName', 'lastName', 'email'] })
+      .sort('created_at')
       .exec();
   }
 
