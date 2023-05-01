@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added CRUD for users.
 - Added security layer for hasing password when storing a new user.
+- Fixed endpoint to store members on a room.
 
 ## [0.2.1] - 2023-04-30
 
@@ -35,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.1] - 2023-04-20
 
 ### Added
+
 - Added base project with the main logic for schemas, service, controller and module for the room feature.
 - Added schemas for user and message.
 - Added .env.example file
