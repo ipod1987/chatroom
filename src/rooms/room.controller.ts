@@ -38,7 +38,7 @@ export class RoomController {
     description: `User with email 'mail' already belongs to room 'roon name'`,
   })
   @ApiNotFoundResponse({ description: 'Room not found' })
-  @Patch(':roomId/users')
+  @Post(':roomId/users')
   async addUserToRoom(
     @Param('roomId') roomId: string,
     @Body() addUserDto: AddUserDto,
@@ -51,11 +51,11 @@ export class RoomController {
   @ApiResponse({ status: 201, description: 'Message sent', type: Room })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Room not found' })
-  @Patch(':roomId/messages')
+  @Post(':roomId/messages')
   async sendMessageToRoom(
     @Param('roomId') roomId: string,
     @Body() data: SendMessageDto,
-  ): Promise<Room> {
+  ): Promise<Message> {
     return await this.roomService.sendMessage(roomId, data);
   }
 

@@ -3,10 +3,10 @@ import { Document, Types } from 'mongoose';
 import { Room } from '../../rooms/schemas/room.schema';
 import { User } from '../../users/schemas/user.schema';
 
-export type MessageDocument = Message & Document;
-
 @Schema()
 export class Message extends Document {
+  _id: string;
+
   @Prop({ type: Types.ObjectId, ref: 'User' })
   sender: User;
 
@@ -23,4 +23,5 @@ export class Message extends Document {
   updated_at: Date;
 }
 
+export type MessageDocument = Message & Document;
 export const MessageSchema = SchemaFactory.createForClass(Message);
