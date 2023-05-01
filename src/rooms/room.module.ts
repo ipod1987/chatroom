@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RoomSchema } from './schemas/room.schema';
 import { Room } from './schemas/room.schema';
 import { UserModule } from '../users/user.module';
+import { MessageModule } from '../messages/message.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -15,6 +16,7 @@ import { UserModule } from '../users/user.module';
       },
     ]),
     UserModule,
+    MessageModule,
   ],
   controllers: [RoomController],
   providers: [RoomService],

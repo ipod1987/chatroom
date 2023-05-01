@@ -6,12 +6,14 @@ import { Message } from '../messages/schemas/message.schema';
 import { AddUserDto, CreateRoomDto, SendMessageDto } from './dto/room.dto';
 import { Types } from 'mongoose';
 import { UsersService } from '../users/user.service';
+import { MessagesService } from '../messages/message.service';
 
 @Injectable()
 export class RoomService {
   constructor(
     @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
     private readonly usersService: UsersService,
+    private readonly messagesService: MessagesService,
   ) {}
 
   async findAll(): Promise<Room[]> {
@@ -46,17 +48,32 @@ export class RoomService {
     return this.findRoomByIdWithUsers(roomId);
   }
 
-  async sendMessage(roomId: string, messageDto: SendMessageDto): Promise<Room> {
+  async sendMessage(roomId: string, messageDto: SendMessageDto): Promise<Message> {
     this.validateId(roomId);
     const room = await this.findRoomById(roomId);
     const user = await this.usersService.findOneByIdModel(messageDto.userId);
-    // room.messages.push(message);
-    return null; // await room.save();
+    if (!user) {
+      throw new NotFoundException(`User with id ${messageDto.userId} not found`);
+    }
+    if (room.members.length > 0) {
+      if (room.members.some((member) => member._id.toString() === user._id.toString())) {
+        const message = await this.messagesService.create(room, user, messageDto.message);
+        return message;
+      } else {
+        throw new BadRequestException(
+          `User with email '${user.email}' no belongs to room '${room.name}'`,
+        );
+      }
+    }
   }
 
   async getLatestMessages(roomId: string, limit: number): Promise<Message[]> {
-    const room = await this.findRoomById(roomId);
-    return room.messages.slice(-limit);
+    const room = await this.roomModel.findById({ _id: roomId }).exec();
+    if (!room) {
+      throw new NotFoundException(`Room with id ${roomId} not found`);
+    }
+    const messages = await this.messagesService.findAllByRoom(room);
+    return messages.slice(-limit);
   }
 
   private async findRoomById(roomId: string): Promise<Room> {

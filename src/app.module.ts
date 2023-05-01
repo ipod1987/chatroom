@@ -6,6 +6,7 @@ import { RoomModule } from './rooms/room.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoConfigService } from './config/mongo-config.service';
 import { UserModule } from './users/user.module';
+import { MessageModule } from './messages/message.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserModule } from './users/user.module';
     }),
     RoomModule,
     UserModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
